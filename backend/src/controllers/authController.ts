@@ -33,7 +33,7 @@ export const registerUser = async (req: Request, res: Response) => {
       name,
       email,
       password,
-      role: 'user', // Default role
+      role: 'admin', // Default role
     });
 
     if (user) {

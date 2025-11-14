@@ -9,9 +9,9 @@ const sequelize = new Sequelize({
   port: Number(process.env.DB_PORT) || 5432,
   logging: false,
   // Other potential properties you might need:
-  database: process.env.DB_NAME || 'booknexus',
+  database: process.env.DB_NAME || 'booknexus_db',
   username: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'password'
+  password: process.env.DB_PASSWORD || 'root',
 });
 
 export const connectDB = async () => {

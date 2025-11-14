@@ -190,12 +190,13 @@ const BookFormPage: React.FC = () => {
 
   const validateUrl = (value: string | undefined) => {
     if (!value) return true;
-    try {
-      new URL(value);
-      return true;
-    } catch {
-      return "Please enter a valid URL";
-    }
+    if (value) return true;
+    // try {
+    //   new URL(value);
+    //   return true;
+    // } catch {
+    //   return "Please enter a valid URL";
+    // }
   };
 
   // Clear file input and preview

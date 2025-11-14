@@ -40,30 +40,30 @@ async function seedUsers() {
     await sequelize.authenticate();
     console.log('✅ Database connected');
     
-    // Create users if they don't exist
+    // Clear the users table first
+    await User.destroy({
+      where: {},
+      truncate: true,
+      cascade: true,
+      force: true
+    });
+    console.log('✅ Users table cleared');
+    
+    // Create users
     for (const userData of users) {
-      // Check if user already exists
-      const existingUser = await User.findOne({
-        where: { email: userData.email }
+      // Hash password
+      const salt = await bcrypt.genSalt(10);
+      //const hashedPassword = await bcrypt.hash(userData.password, salt);
+      
+      // Create user with hashed password
+      const newUser = await User.create({
+        name: userData.name,
+        email: userData.email,
+        password: userData.password, // Use the hashed password here
+        role: userData.role as 'admin' | 'user',
       });
       
-      if (existingUser) {
-        console.log(`ℹ️ User with email ${userData.email} already exists`);
-      } else {
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(userData.password, salt);
-        
-        // Create user
-        const newUser = await User.create({
-          name: userData.name,
-          email: userData.email,
-          password: hashedPassword,
-          role: userData.role as 'admin' | 'user',
-        });
-        
-        console.log(`✅ User created: ${newUser.name} (${newUser.email})`);
-      }
+      console.log(`✅ User created: ${newUser.name} (${newUser.email})`);
     }
     
     console.log('✅ Seeding completed successfully');

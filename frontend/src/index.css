@@ -2,3 +2,11 @@
 
 
 
+body {
+  background-color: #ffffffa5;
+  background-image: 
+    radial-gradient(#e6e6e6 2px, transparent 2px),
+    radial-gradient(#e6e6e6 2px, transparent 2px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+}

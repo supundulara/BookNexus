@@ -130,7 +130,7 @@ const Navbar: React.FC = () => {
           </div>
           
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
-            <button
+            {/* <button
               onClick={toggleTheme}
               className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
@@ -139,7 +139,7 @@ const Navbar: React.FC = () => {
               ) : (
                 <MoonIcon className="h-5 w-5" />
               )}
-            </button>
+            </button> */}
             
             {isAuthenticated ? (
               <div className="relative">
@@ -195,7 +195,7 @@ const Navbar: React.FC = () => {
           </div>
           
           <div className="flex items-center sm:hidden">
-            <button
+            {/* <button
               onClick={toggleTheme}
               className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
             >
@@ -204,7 +204,7 @@ const Navbar: React.FC = () => {
               ) : (
                 <MoonIcon className="h-5 w-5" />
               )}
-            </button>
+            </button> */}
             
             <button
               onClick={toggleMenu}
