@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '../../contexts/AuthContext';
+
 import type { StudentLoginCredentials } from '../../types/auth';
 import { loginStudent } from '../../services/authService';
-import { useNavigate } from 'react-router-dom';
+
 import toast from 'react-hot-toast';
 
 const StudentLoginForm: React.FC = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState<StudentLoginCredentials>({
     registrationNumber: '',
     password: '',
@@ -27,7 +26,8 @@ const StudentLoginForm: React.FC = () => {
 
     try {
       const userData = await loginStudent(formData);
-      toast.success('Login successful!');
+      toast.success('Login successful! ');
+      console.log(userData);
       
       // Manually update localStorage and redirect
       window.location.href = '/';
