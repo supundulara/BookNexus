@@ -43,7 +43,7 @@ const HomePage: React.FC = () => {
               <BookOpenIcon className="h-10 w-10 text-emerald-600" />
             </motion.div>
             <h1 className="text-5xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-black to-black bg-clip-text text-transparent">
-              Welcome to BookNexus - V2.0
+              Welcome to BookNexus 
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto">
               Discover, explore, and manage your library with ease
