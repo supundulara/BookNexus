@@ -1,0 +1,53 @@
+name: Deploy BookNexus to EC2
+
+on:
+  push:
+    branches:
+      - main   # Deploys only when you push to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout your repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Setup SSH agent with your EC2 key
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      # Step 3: Deploy code to EC2
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            echo "Starting deployment on EC2..."
+
+            cd ~/BookNexus
+
+            # Reset and pull latest code
+            git reset --hard
+            git pull origin main
+
+            # ---- Backend Deployment ----
+            cd backend
+            npm install
+            npm run build
+            pm2 restart booknexus-backend || pm2 start dist/index.js --name booknexus-backend
+            pm2 save
+
+            # ---- Frontend Deployment ----
+            cd ../frontend
+            npm install
+            npm run build
+            sudo cp -r build/* /var/www/myapp/
+            sudo chown -R ubuntu:ubuntu /var/www/myapp
+
+            # Reload Nginx to serve new frontend
+            sudo systemctl reload nginx
+
+            echo "Deployment completed successfully!"
+          EOF
