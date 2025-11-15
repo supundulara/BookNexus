@@ -35,6 +35,7 @@ jobs:
             cd backend
             npm install
             npm run build
+            npm run seed
             pm2 restart booknexus-backend || pm2 start dist/index.js --name booknexus-backend
             pm2 save
 
@@ -42,7 +43,7 @@ jobs:
             cd ../frontend
             npm install
             npm run build
-            sudo cp -r build/* /var/www/myapp/
+            sudo cp -r dist/* /var/www/myapp/
             sudo chown -R ubuntu:ubuntu /var/www/myapp
 
             # Reload Nginx to serve updated frontend
