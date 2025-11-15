@@ -6,8 +6,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { UserGroupIcon } from '@heroicons/react/24/outline'; // Add this import
 
 import { 
-  MoonIcon, 
-  SunIcon, 
   Bars3Icon, 
   XMarkIcon,
   UserCircleIcon,
@@ -17,7 +15,7 @@ import {
 
 const Navbar: React.FC = () => {
   const { user, logout, isAuthenticated } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
