@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
-import { UserGroupIcon } from '@heroicons/react/24/outline'; // Add this import
 
 import { 
   Bars3Icon, 
@@ -24,16 +23,16 @@ const Navbar: React.FC = () => {
     { name: 'Home', path: '/' },
     { name: 'Books', path: '/books' },
     { name: 'Search', path: '/search' },
-      {
-    name: 'Librarians',
-    path: '/admin/librarians',
-    icon: UserGroupIcon
-  }
   ];
 
   const adminNavigation = [
-    // { name: 'Dashboard', path: '/admin/dashboard' },
     { name: 'Manage Books', path: '/admin/books' },
+    { name: 'Students', path: '/admin/students' },
+    { name: 'Librarians', path: '/admin/librarians' },
+  ];
+
+  const studentNavigation = [
+    { name: 'My Books', path: '/my-books' },
   ];
 
   const toggleMenu = () => setMobileMenuOpen(!mobileMenuOpen);
@@ -124,6 +123,24 @@ const Navbar: React.FC = () => {
                   ))}
                 </>
               )}
+
+              {user?.role === 'student' && (
+                <>
+                  {studentNavigation.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      className={`${
+                        location.pathname === item.path
+                          ? 'border-emerald-500 text-gray-900 dark:text-white'
+                          : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200'
+                      } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </>
+              )}
             </div>
           </div>
           
@@ -161,7 +178,12 @@ const Navbar: React.FC = () => {
                       <div className="py-1">
                         <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700">
                           <p className="font-medium">{user?.name}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
+                          {user?.role === 'student' && user?.registrationNumber ? (
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Reg: {user.registrationNumber}</p>
+                          ) : (
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
+                          )}
+                          <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 capitalize">{user?.role}</p>
                         </div>
                         <Link
                           to="/profile"

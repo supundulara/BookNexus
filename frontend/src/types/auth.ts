@@ -3,8 +3,9 @@ import { z } from 'zod';
 export interface User {
   id: number;
   name: string;
-  email: string;
-  role: 'user' | 'admin';
+  email: string | null;
+  registrationNumber?: string;
+  role: 'user' | 'admin' | 'student';
   token?: string;
 }
 
@@ -40,6 +41,17 @@ export interface LibrarianData {
   email: string;
   password: string;
   role: 'admin';
+}
+
+export interface StudentData {
+  name: string;
+  registrationNumber: string;
+  password: string;
+}
+
+export interface StudentLoginCredentials {
+  registrationNumber: string;
+  password: string;
 }
 
 // Add Zod validation schema for profile update

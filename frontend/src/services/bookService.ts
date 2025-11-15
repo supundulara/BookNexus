@@ -1,5 +1,5 @@
 import api from './api';
-import type { Book,  BookSearchParams, BookSummary } from '../types/books';
+import type { Book,  BookSearchParams, BookSummary, Checkout } from '../types/books';
 
 export const getBooks = async (): Promise<Book[]> => {
   const response = await api.get('/books');
@@ -50,12 +50,30 @@ export const deleteBook = async (id: number): Promise<void> => {
   await api.delete(`/books/${id}`);
 };
 
-export const checkoutBook = async (id: number): Promise<Book> => {
-  const response = await api.put(`/books/${id}/checkout`);
+export const checkoutBook = async (id: number, registrationNumber: string): Promise<Book> => {
+  const response = await api.post(`/books/${id}/checkout`, { registrationNumber });
   return response.data.book;
 };
 
-export const returnBook = async (id: number): Promise<Book> => {
-  const response = await api.put(`/books/${id}/return`);
+export const returnBook = async (id: number, registrationNumber: string): Promise<Book> => {
+  const response = await api.put(`/books/${id}/return`, { registrationNumber });
   return response.data.book;
+};
+
+// Get student's borrowed books
+export const getMyCheckouts = async (): Promise<Checkout[]> => {
+  const response = await api.get('/books/my-checkouts');
+  return response.data;
+};
+
+// Get checkouts for a specific book (admin only)
+export const getBookCheckouts = async (id: number): Promise<Checkout[]> => {
+  const response = await api.get(`/books/${id}/checkouts`);
+  return response.data;
+};
+
+// Get full checkout history for a book (admin only)
+export const getBookCheckoutHistory = async (id: number): Promise<Checkout[]> => {
+  const response = await api.get(`/books/${id}/checkout-history`);
+  return response.data;
 };

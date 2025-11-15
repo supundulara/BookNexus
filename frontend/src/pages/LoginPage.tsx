@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import LoginForm from '../components/auth/LoginForm';
 import { useAuth } from '../contexts/AuthContext';
@@ -50,6 +50,17 @@ const LoginPage: React.FC = () => {
         {/* You may need to style this component separately to match the theme */}
         <LoginForm />
         
+        <div className="text-center mt-6">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Are you a student?{' '}
+            <Link 
+              to="/student-login" 
+              className="font-medium text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+            >
+              Login here
+            </Link>
+          </p>
+        </div>
 
       </motion.div>
     </div>

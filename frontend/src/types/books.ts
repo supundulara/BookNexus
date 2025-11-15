@@ -36,3 +36,17 @@ export interface BookFormData {
   availableCopies: number;
   description?: string;
 }
+
+export interface Checkout {
+  id: number;
+  userId: number;
+  bookId: number;
+  checkedOutAt: string;
+  returnedAt?: string;
+  Book?: Book;
+  User?: {
+    id: number;
+    name: string;
+    registrationNumber?: string;
+  };
+}

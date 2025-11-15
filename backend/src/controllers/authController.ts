@@ -155,3 +155,118 @@ export const deleteLibrarian = async (req: Request, res: Response, next: NextFun
     next(error);
   }
 };
+
+// @desc    Register a new student (admin only)
+// @route   POST /api/auth/students/register
+// @access  Private/Admin
+export const registerStudent = async (req: Request, res: Response) => {
+  try {
+    const { name, registrationNumber, password } = req.body;
+
+    // Check if student with registration number exists
+    const studentExists = await User.findOne({ where: { registrationNumber } });
+
+    if (studentExists) {
+      return res.status(400).json({ message: 'Student with this registration number already exists' });
+    }
+
+    // Create student
+    const student = await User.create({
+      name,
+      registrationNumber,
+      email: null,
+      password,
+      role: 'student',
+    });
+
+    if (student) {
+      res.status(201).json({
+        id: student.id,
+        name: student.name,
+        registrationNumber: student.registrationNumber,
+        role: student.role,
+      });
+    } else {
+      res.status(400).json({ message: 'Invalid student data' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+// @desc    Student login with registration number
+// @route   POST /api/auth/students/login
+// @access  Public
+export const loginStudent = async (req: Request, res: Response) => {
+  try {
+    const { registrationNumber, password } = req.body;
+
+    // Check for student
+    const student = await User.findOne({ where: { registrationNumber, role: 'student' } });
+
+    if (student && (await student.comparePassword(password))) {
+      res.json({
+        id: student.id,
+        name: student.name,
+        registrationNumber: student.registrationNumber,
+        role: student.role,
+        token: generateToken(student.id),
+      });
+    } else {
+      res.status(401).json({ message: 'Invalid registration number or password' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+// @desc    Get all students (admin only)
+// @route   GET /api/auth/students
+// @access  Private/Admin
+export const getAllStudents = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Only admins can access this endpoint
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized to access this resource' });
+    }
+    
+    const students = await User.findAll({
+      where: { role: 'student' },
+      attributes: { exclude: ['password'] }
+    });
+    
+    res.status(200).json(students);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Delete a student
+// @route   DELETE /api/auth/students/:id
+// @access  Private/Admin
+export const deleteStudent = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.params.id) {
+      return res.status(400).json({ message: 'Student ID is required' });
+    }
+    const studentId = parseInt(req.params.id);
+    
+    const student = await User.findByPk(studentId);
+    
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    
+    if (student.role !== 'student') {
+      return res.status(400).json({ message: 'User is not a student' });
+    }
+    
+    await student.destroy();
+    
+    res.status(200).json({ message: 'Student deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+};

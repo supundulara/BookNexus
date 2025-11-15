@@ -5,9 +5,10 @@ import bcrypt from 'bcrypt';
 interface UserAttributes {
   id: number;
   name: string;
-  email: string;
+  email: string | null;
   password: string;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'student';
+  registrationNumber?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -20,9 +21,10 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   }
   public id!: number;
   public name!: string;
-  public email!: string;
+  public email!: string | null;
   public password!: string;
-  public role!: 'user' | 'admin';
+  public role!: 'user' | 'admin' | 'student';
+  public registrationNumber?: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -45,18 +47,23 @@ User.init(
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true,
       validate: {
         isEmail: true,
       },
+    },
+    registrationNumber: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM('user', 'admin'),
+      type: DataTypes.ENUM('user', 'admin', 'student'),
       allowNull: false,
       defaultValue: 'user',
     },

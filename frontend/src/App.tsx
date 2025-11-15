@@ -19,6 +19,9 @@ import AdminBooksPage from './pages/AdminBooksPage';
 import BookFormPage from './pages/BookFormPage';
 import NotFoundPage from './pages/NotFoundPage';
 import LibrarianManagementPage from './pages/LibrarianManagementPage';
+import StudentManagementPage from './pages/StudentManagementPage';
+import StudentLoginPage from './pages/StudentLoginPage';
+import MyBooksPage from './pages/MyBooksPage';
 
 
 // Create a query client
@@ -42,6 +45,7 @@ const App: React.FC = () => {
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/student-login" element={<StudentLoginPage />} />
               <Route path="/books" element={<BooksPage />} />
               <Route path="/books/:id" element={<BookDetailPage />} />
               <Route path="/search" element={<SearchPage />} />
@@ -52,8 +56,20 @@ const App: React.FC = () => {
                   <ProfilePage />
                 </ProtectedRoute>
               } />
+
+              {/* Student routes */}
+              <Route path="/my-books" element={
+                <ProtectedRoute>
+                  <MyBooksPage />
+                </ProtectedRoute>
+              } />
               
               {/* Admin routes */}
+              <Route path="/admin/students" element={
+                <AdminRoute>
+                  <StudentManagementPage />
+                </AdminRoute>
+              } />
               <Route path="/admin/librarians" element={
                 <AdminRoute>
                   <LibrarianManagementPage />

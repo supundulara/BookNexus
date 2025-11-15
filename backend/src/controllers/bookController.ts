@@ -1,6 +1,8 @@
 import type { Request, Response } from 'express';
 import { Op } from 'sequelize';
 import Book from '../models/Book.js';
+import User from '../models/User.js';
+import Checkout from '../models/Checkout.js';
 import { generateBookSummary, getBookRecommendations } from '../services/geminiService.js';
 import fs from 'fs';
 import path from 'path';
@@ -209,25 +211,51 @@ export const deleteBook = async (req: Request, res: Response) => {
   }
 };
 
-// @desc    Check out a book
-// @route   PUT /api/books/:id/checkout
+// @desc    Check out a book to a student
+// @route   POST /api/books/:id/checkout
 // @access  Private/Admin
 export const checkoutBook = async (req: Request, res: Response) => {
   try {
+    const { registrationNumber } = req.body;
     const book = await Book.findByPk(req.params.id);
     
-    if (book) {
-      if (book.availableCopies > 0) {
-        await book.update({
-          availableCopies: book.availableCopies - 1
-        });
-        
-        res.json({ message: 'Book checked out successfully', book });
-      } else {
-        res.status(400).json({ message: 'Book is not available' });
-      }
+    if (!book) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+
+    // Find student by registration number
+    const student = await User.findOne({ 
+      where: { registrationNumber, role: 'student' } 
+    });
+
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found with this registration number' });
+    }
+
+    if (book.availableCopies > 0) {
+      // Create checkout record
+      await Checkout.create({
+        userId: student.id,
+        bookId: book.id,
+        checkedOutAt: new Date(),
+      });
+
+      // Update available copies
+      await book.update({
+        availableCopies: book.availableCopies - 1
+      });
+      
+      res.json({ 
+        message: 'Book checked out successfully', 
+        book,
+        student: {
+          id: student.id,
+          name: student.name,
+          registrationNumber: student.registrationNumber
+        }
+      });
     } else {
-      res.status(404).json({ message: 'Book not found' });
+      res.status(400).json({ message: 'Book is not available' });
     }
   } catch (error) {
     console.error(error);
@@ -240,21 +268,54 @@ export const checkoutBook = async (req: Request, res: Response) => {
 // @access  Private/Admin
 export const returnBook = async (req: Request, res: Response) => {
   try {
+    const { registrationNumber } = req.body;
     const book = await Book.findByPk(req.params.id);
     
-    if (book) {
-      if (book.availableCopies < book.totalCopies) {
-        await book.update({
-          availableCopies: book.availableCopies + 1
-        });
-        
-        res.json({ message: 'Book returned successfully', book });
-      } else {
-        res.status(400).json({ message: 'All copies are already available' });
-      }
-    } else {
-      res.status(404).json({ message: 'Book not found' });
+    if (!book) {
+      return res.status(404).json({ message: 'Book not found' });
     }
+
+    // Find student by registration number
+    const student = await User.findOne({ 
+      where: { registrationNumber, role: 'student' } 
+    });
+
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found with this registration number' });
+    }
+
+    // Find the checkout record - using Sequelize.col for null check
+    const checkout = await Checkout.findOne({
+      where: {
+        userId: student.id,
+        bookId: book.id,
+        returnedAt: { [Op.eq]: null as any }
+      }
+    });
+
+    if (!checkout) {
+      return res.status(404).json({ message: 'No active checkout found for this student and book' });
+    }
+
+    // Update checkout record with return date
+    await checkout.update({
+      returnedAt: new Date()
+    });
+
+    // Update available copies
+    await book.update({
+      availableCopies: book.availableCopies + 1
+    });
+    
+    res.json({ 
+      message: 'Book returned successfully', 
+      book,
+      student: {
+        id: student.id,
+        name: student.name,
+        registrationNumber: student.registrationNumber
+      }
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
@@ -307,6 +368,87 @@ export const searchBooksWithAI = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error searching books with AI:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+// @desc    Get student's borrowed books
+// @route   GET /api/books/my-checkouts
+// @access  Private/Student
+export const getMyCheckouts = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    const checkouts = await Checkout.findAll({
+      where: {
+        userId: req.user.id,
+        returnedAt: { [Op.eq]: null as any }
+      },
+      include: [
+        {
+          model: Book,
+          attributes: ['id', 'title', 'author', 'isbn', 'imageUrl']
+        }
+      ],
+      order: [['checkedOutAt', 'DESC']]
+    });
+
+    res.json(checkouts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+// @desc    Get checkouts for a specific book
+// @route   GET /api/books/:id/checkouts
+// @access  Private/Admin
+export const getBookCheckouts = async (req: Request, res: Response) => {
+  try {
+    const checkouts = await Checkout.findAll({
+      where: {
+        bookId: req.params.id,
+        returnedAt: { [Op.eq]: null as any }
+      },
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'name', 'registrationNumber']
+        }
+      ],
+      order: [['checkedOutAt', 'DESC']]
+    });
+
+    res.json(checkouts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+// @desc    Get all checkout history for a book (including returned)
+// @route   GET /api/books/:id/checkout-history
+// @access  Private/Admin
+export const getBookCheckoutHistory = async (req: Request, res: Response) => {
+  try {
+    const checkouts = await Checkout.findAll({
+      where: {
+        bookId: req.params.id
+      },
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'name', 'registrationNumber']
+        }
+      ],
+      order: [['checkedOutAt', 'DESC']]
+    });
+
+    res.json(checkouts);
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Server Error' });
   }
 };

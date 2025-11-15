@@ -4,6 +4,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import MainLayout from '../components/layout/MainLayout';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import CheckoutModal from '../components/books/CheckoutModal';
+import BookCheckouts from '../components/books/BookCheckouts';
 import { getBookById, getBookSummary, checkoutBook, returnBook, deleteBook } from '../services/bookService';
 import { useAuth } from '../contexts/AuthContext';
 import { BookCover } from '../utils/imageUtils';
@@ -30,6 +32,8 @@ const BookDetailPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [showSummary, setShowSummary] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [showReturnModal, setShowReturnModal] = useState(false);
   
   const { data: book, isLoading, error, refetch } = useQuery({
     queryKey: ['book', id],
@@ -43,26 +47,26 @@ const BookDetailPage: React.FC = () => {
     enabled: !!id && showSummary,
   });
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (registrationNumber: string) => {
     if (!book) return;
     
     try {
-      await checkoutBook(book.id);
+      await checkoutBook(book.id, registrationNumber);
       refetch();
       toast.success('Book checked out successfully');
-    } catch (error) {
+    } catch {
       toast.error('Failed to checkout book');
     }
   };
 
-  const handleReturn = async () => {
+  const handleReturn = async (registrationNumber: string) => {
     if (!book) return;
     
     try {
-      await returnBook(book.id);
+      await returnBook(book.id, registrationNumber);
       refetch();
       toast.success('Book returned successfully');
-    } catch (error) {
+    } catch {
       toast.error('Failed to return book');
     }
   };
@@ -175,10 +179,10 @@ const BookDetailPage: React.FC = () => {
                 </div>
               </div>
               
-              {user && (
+              {user && user.role === 'admin' && (
                 <div className="mt-6 space-y-3">
                   <button
-                    onClick={handleCheckout}
+                    onClick={() => setShowCheckoutModal(true)}
                     disabled={book.availableCopies === 0}
                     className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
                   >
@@ -186,7 +190,7 @@ const BookDetailPage: React.FC = () => {
                     Check Out Book
                   </button>
                   <button
-                    onClick={handleReturn}
+                    onClick={() => setShowReturnModal(true)}
                     disabled={book.availableCopies === book.totalCopies}
                     className="inline-flex items-center justify-center w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -314,6 +318,27 @@ const BookDetailPage: React.FC = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Checkout Information for Admins */}
+      {user?.role === 'admin' && (
+        <BookCheckouts bookId={Number(id)} />
+      )}
+
+      {/* Checkout Modal */}
+      <CheckoutModal 
+        isOpen={showCheckoutModal}
+        onClose={() => setShowCheckoutModal(false)}
+        onCheckout={handleCheckout}
+        bookTitle={book.title}
+      />
+
+      {/* Return Modal - Similar to Checkout Modal */}
+      <CheckoutModal 
+        isOpen={showReturnModal}
+        onClose={() => setShowReturnModal(false)}
+        onCheckout={handleReturn}
+        bookTitle={`Return: ${book.title}`}
+      />
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

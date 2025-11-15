@@ -1,8 +1,18 @@
 import api from './api';
-import type { LoginCredentials, RegisterData, User } from '../types/auth';
+import type { LoginCredentials, RegisterData, User, StudentData, StudentLoginCredentials } from '../types/auth';
 
 export const login = async (credentials: LoginCredentials): Promise<User> => {
   const response = await api.post('/auth/login', credentials);
+  
+  // Store token and user info in localStorage
+  localStorage.setItem('token', response.data.token);
+  localStorage.setItem('user', JSON.stringify(response.data));
+  
+  return response.data;
+};
+
+export const loginStudent = async (credentials: StudentLoginCredentials): Promise<User> => {
+  const response = await api.post('/auth/students/login', credentials);
   
   // Store token and user info in localStorage
   localStorage.setItem('token', response.data.token);
@@ -37,6 +47,21 @@ export const getLibrarians = async (): Promise<User[]> => {
 
 export const deleteLibrarian = async (id: number): Promise<void> => {
   await api.delete(`/auth/librarians/${id}`);
+};
+
+// Student-related functions
+export const registerStudent = async (studentData: StudentData): Promise<User> => {
+  const response = await api.post('/auth/students/register', studentData);
+  return response.data;
+};
+
+export const getStudents = async (): Promise<User[]> => {
+  const response = await api.get('/auth/students');
+  return response.data;
+};
+
+export const deleteStudent = async (id: number): Promise<void> => {
+  await api.delete(`/auth/students/${id}`);
 };
 
 

@@ -9,7 +9,10 @@ const router = express.Router();
 router.get('/', bookController.getBooks);
 router.get('/search', bookController.searchBooks);
 router.get('/ai-search', bookController.searchBooksWithAI); // Specific route first
+router.get('/my-checkouts', protect, bookController.getMyCheckouts); // Student checkouts
 router.get('/:id/summary', bookController.getBookSummary); // Put routes with parameters after
+router.get('/:id/checkouts', protect, admin, bookController.getBookCheckouts); // Book's current checkouts
+router.get('/:id/checkout-history', protect, admin, bookController.getBookCheckoutHistory); // Book's checkout history
 router.get('/:id', bookController.getBookById); // Catch-all route should be last
 
 // Protected admin routes with file upload
@@ -18,7 +21,7 @@ router.put('/:id', protect, admin, upload.single('coverImage'), bookController.u
 router.delete('/:id', protect, admin, bookController.deleteBook);
 
 // Checkout routes
-router.put('/:id/checkout', protect, bookController.checkoutBook);
-router.put('/:id/return', protect, bookController.returnBook);
+router.post('/:id/checkout', protect, admin, bookController.checkoutBook);
+router.put('/:id/return', protect, admin, bookController.returnBook);
 
 export default router;
