@@ -12,7 +12,7 @@ jobs:
     steps:
       # Step 1: Checkout your repository
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: appleboy/ssh-action@v1
 
       # Step 2: Setup SSH agent with your EC2 key
       - name: Setup SSH
