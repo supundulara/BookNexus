@@ -41,12 +41,7 @@ async function seedUsers() {
     console.log('✅ Database connected');
     
     // Clear the users table first
-    await User.destroy({
-      where: {},
-      truncate: true,
-      cascade: true,
-      force: true
-    });
+    await User.sync({ force: true });
     console.log('✅ Users table cleared');
     
     // Create users

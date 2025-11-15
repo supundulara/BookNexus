@@ -23,6 +23,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
+            # This makes the script exit immediately if any command fails
+            set -e
             echo "Starting deployment on EC2..."
 
             cd ~/BookNexus
