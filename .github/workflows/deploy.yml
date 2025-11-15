@@ -36,6 +36,7 @@ jobs:
             npm install
             npm run build
             npm run seed
+            npm run seed:books
             pm2 restart booknexus-backend || pm2 start dist/index.js --name booknexus-backend
             pm2 save
 
