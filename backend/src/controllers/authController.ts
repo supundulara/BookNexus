@@ -100,6 +100,53 @@ export const getUserProfile = async (req: Request, res: Response) => {
   }
 };
 
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+export const updateUserProfile = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findByPk(req.user?.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { name, currentPassword, newPassword } = req.body;
+
+    // Update name if provided
+    if (name) {
+      user.name = name;
+    }
+
+    // Update password if provided
+    if (newPassword) {
+      // Verify current password
+      if (!currentPassword) {
+        return res.status(400).json({ message: 'Current password is required to set a new password' });
+      }
+
+      const isPasswordValid = await user.comparePassword(currentPassword);
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: 'Current password is incorrect' });
+      }
+
+      user.password = newPassword;
+    }
+
+    await user.save();
+
+    // Return updated user without password
+    const updatedUser = await User.findByPk(user.id, {
+      attributes: { exclude: ['password'] },
+    });
+
+    res.json(updatedUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 // Get all users (admin only)
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -162,7 +209,19 @@ export const deleteLibrarian = async (req: Request, res: Response, next: NextFun
 // @access  Private/Admin
 export const registerStudent = async (req: Request, res: Response) => {
   try {
-    const { name, registrationNumber, password } = req.body;
+    const { 
+      name, 
+      registrationNumber, 
+      password,
+      faculty,
+      courseOfStudy,
+      intakeBatch,
+      indexNumber,
+      title,
+      lastName,
+      nameWithInitials,
+      gender
+    } = req.body;
 
     // Check if student with registration number exists
     const studentExists = await User.findOne({ where: { registrationNumber } });
@@ -178,6 +237,14 @@ export const registerStudent = async (req: Request, res: Response) => {
       email: null,
       password,
       role: 'student',
+      faculty,
+      courseOfStudy,
+      intakeBatch,
+      indexNumber,
+      title,
+      lastName,
+      nameWithInitials,
+      gender
     });
 
     if (student) {
@@ -186,6 +253,14 @@ export const registerStudent = async (req: Request, res: Response) => {
         name: student.name,
         registrationNumber: student.registrationNumber,
         role: student.role,
+        faculty: student.faculty,
+        courseOfStudy: student.courseOfStudy,
+        intakeBatch: student.intakeBatch,
+        indexNumber: student.indexNumber,
+        title: student.title,
+        lastName: student.lastName,
+        nameWithInitials: student.nameWithInitials,
+        gender: student.gender
       });
     } else {
       res.status(400).json({ message: 'Invalid student data' });
@@ -212,6 +287,14 @@ export const loginStudent = async (req: Request, res: Response) => {
         name: student.name,
         registrationNumber: student.registrationNumber,
         role: student.role,
+        faculty: student.faculty,
+        courseOfStudy: student.courseOfStudy,
+        intakeBatch: student.intakeBatch,
+        indexNumber: student.indexNumber,
+        title: student.title,
+        lastName: student.lastName,
+        nameWithInitials: student.nameWithInitials,
+        gender: student.gender,
         token: generateToken(student.id),
       });
     } else {

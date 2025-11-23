@@ -25,11 +25,16 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle session expiration
+    // Handle session expiration - but not for profile update errors
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      // Don't log out if it's a profile update with wrong password
+      const isProfileUpdate = error.config?.url?.includes('/profile') && error.config?.method === 'put';
+      
+      if (!isProfileUpdate) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

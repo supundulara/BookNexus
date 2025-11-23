@@ -9,6 +9,14 @@ interface UserAttributes {
   password: string;
   role: 'user' | 'admin' | 'student';
   registrationNumber?: string;
+  faculty?: string;
+  courseOfStudy?: string;
+  intakeBatch?: string;
+  indexNumber?: string;
+  title?: string;
+  lastName?: string;
+  nameWithInitials?: string;
+  gender?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -25,6 +33,14 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public password!: string;
   public role!: 'user' | 'admin' | 'student';
   public registrationNumber?: string;
+  public faculty?: string;
+  public courseOfStudy?: string;
+  public intakeBatch?: string;
+  public indexNumber?: string;
+  public title?: string;
+  public lastName?: string;
+  public nameWithInitials?: string;
+  public gender?: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -57,6 +73,38 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
       unique: true,
+    },
+    faculty: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    courseOfStudy: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    intakeBatch: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    indexNumber: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    nameWithInitials: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    gender: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     password: {
       type: DataTypes.STRING,

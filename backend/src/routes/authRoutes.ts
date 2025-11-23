@@ -2,7 +2,8 @@ import express from 'express';
 import { 
   registerUser, 
   loginUser, 
-  getUserProfile, 
+  getUserProfile,
+  updateUserProfile, 
   getAllUsers,
   deleteLibrarian,
   registerStudent,
@@ -17,6 +18,7 @@ const router = express.Router();
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.get('/profile', protect, getUserProfile);
+router.put('/profile', protect, updateUserProfile);
 router.get('/users', protect, getAllUsers);
 router.delete('/librarians/:id', protect, admin, deleteLibrarian);
 

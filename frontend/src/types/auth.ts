@@ -7,6 +7,14 @@ export interface User {
   registrationNumber?: string;
   role: 'user' | 'admin' | 'student';
   token?: string;
+  faculty?: string;
+  courseOfStudy?: string;
+  intakeBatch?: string;
+  indexNumber?: string;
+  title?: string;
+  lastName?: string;
+  nameWithInitials?: string;
+  gender?: string;
 }
 
 export interface LoginCredentials {
@@ -47,6 +55,14 @@ export interface StudentData {
   name: string;
   registrationNumber: string;
   password: string;
+  faculty: string;
+  courseOfStudy: string;
+  intakeBatch: string;
+  indexNumber: string;
+  title: string;
+  lastName: string;
+  nameWithInitials: string;
+  gender: string;
 }
 
 export interface StudentLoginCredentials {
@@ -57,31 +73,29 @@ export interface StudentLoginCredentials {
 // Add Zod validation schema for profile update
 export const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address').optional(),
-  currentPassword: z.string().optional(),
-  newPassword: z.string()
-    .min(8, 'Password must be at least 8 characters')
-    .optional()
-    .refine(val => !val || /[A-Z]/.test(val), {
-      message: 'Password must contain at least one uppercase letter',
-    })
-    .refine(val => !val || /[0-9]/.test(val), {
-      message: 'Password must contain at least one number',
-    }),
-  confirmPassword: z.string().optional(),
+  email: z.string().email('Invalid email address').optional().or(z.literal('')),
+  currentPassword: z.string().optional().or(z.literal('')),
+  newPassword: z.string().optional().or(z.literal('')),
+  confirmPassword: z.string().optional().or(z.literal('')),
 }).refine(data => {
-  // If new password is provided, confirm password must match
-  if (data.newPassword && data.newPassword !== data.confirmPassword) {
-    return false;
-  }
-  
-  // If new password is provided, current password is required
-  if (data.newPassword && !data.currentPassword) {
-    return false;
+  // If new password is provided and not empty, validate it
+  if (data.newPassword && data.newPassword.trim() !== '') {
+    // Check minimum length
+    if (data.newPassword.length < 6) {
+      return false;
+    }
+    // Confirm password must match
+    if (data.newPassword !== data.confirmPassword) {
+      return false;
+    }
+    // Current password is required
+    if (!data.currentPassword || data.currentPassword.trim() === '') {
+      return false;
+    }
   }
   
   return true;
 }, {
-  message: "Passwords don't match or current password is required",
+  message: "Please check password requirements",
   path: ['confirmPassword'],
 });
