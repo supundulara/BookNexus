@@ -39,6 +39,8 @@ Checkout.init(
         model: User,
         key: 'id',
       },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     bookId: {
       type: DataTypes.INTEGER,
@@ -47,6 +49,8 @@ Checkout.init(
         model: Book,
         key: 'id',
       },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     checkedOutAt: {
       type: DataTypes.DATE,
@@ -63,11 +67,11 @@ Checkout.init(
   }
 );
 
-// Establish relationships
-User.hasMany(Checkout, { foreignKey: 'userId' });
-Checkout.belongsTo(User, { foreignKey: 'userId' });
+// Establish relationships with CASCADE delete
+User.hasMany(Checkout, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Checkout.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
 
-Book.hasMany(Checkout, { foreignKey: 'bookId' });
-Checkout.belongsTo(Book, { foreignKey: 'bookId' });
+Book.hasMany(Checkout, { foreignKey: 'bookId', onDelete: 'CASCADE' });
+Checkout.belongsTo(Book, { foreignKey: 'bookId', onDelete: 'CASCADE' });
 
 export default Checkout;

@@ -19,14 +19,25 @@ export const connectDB = async () => {
     await sequelize.authenticate();
     console.log('Database connection established successfully');
     
-    // Add this line to create tables in development:
+    // Import cleanup utility (dynamic import to avoid circular dependencies)
+    const { cleanupOrphanedCheckouts } = await import('../utils/cleanupOrphanedData.js');
+    
+    // Clean up orphaned data before syncing
+    await cleanupOrphanedCheckouts();
+    
+    // Sync database tables
     if (process.env.NODE_ENV === 'development') {
       await sequelize.sync({ alter: true });
       console.log('Database tables synchronized');
+    } else {
+      // In production, only sync without altering existing tables
+      await sequelize.sync({ alter: false });
+      console.log('Database schema verified');
     }
   } catch (error) {
     console.error('Unable to connect to the database:', error);
-    process.exit(1);
+    // Log the error but don't exit immediately - allow graceful shutdown
+    throw error;
   }
 };
 

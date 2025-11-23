@@ -23,8 +23,19 @@ process.on('unhandledRejection', (error) => {
 // Load environment variables
 dotenv.config();
 
-// Connect to database
-connectDB();
+// Connect to database with error handling
+const initializeDatabase = async () => {
+  try {
+    await connectDB();
+  } catch (error) {
+    console.error('Failed to initialize database:', error);
+    console.error('Server will start but database operations may fail.');
+    // Don't exit - let the app run for health checks/debugging
+  }
+};
+
+// Initialize database connection
+initializeDatabase();
 
 const app = express();
 
