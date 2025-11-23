@@ -108,8 +108,9 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
       return res.status(403).json({ message: 'Not authorized to access this resource' });
     }
     
-    // Use Sequelize's findAll method instead of MongoDB's find
+    // Use Sequelize's findAll method to get only admin users (librarians)
     const users = await User.findAll({
+      where: { role: 'admin' },
       attributes: { exclude: ['password'] } // Exclude password field
     });
     
