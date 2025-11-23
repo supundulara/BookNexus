@@ -26,14 +26,19 @@ const StudentLoginForm: React.FC = () => {
 
     try {
       const userData = await loginStudent(formData);
-      toast.success('Login successful! ');
-      console.log(userData);
+      toast.success('Login successful!');
+      console.log('Login successful:', userData);
       
       // Manually update localStorage and redirect
-      window.location.href = '/';
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
     } catch (error: unknown) {
+      console.error('Login error:', error);
       const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || 'Login failed');
+      const errorMessage = err.response?.data?.message || 'Invalid registration number or password';
+      toast.error(errorMessage);
+      // Don't redirect on error
     } finally {
       setIsLoading(false);
     }

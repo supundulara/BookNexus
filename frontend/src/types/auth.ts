@@ -78,24 +78,33 @@ export const profileSchema = z.object({
   newPassword: z.string().optional().or(z.literal('')),
   confirmPassword: z.string().optional().or(z.literal('')),
 }).refine(data => {
-  // If new password is provided and not empty, validate it
-  if (data.newPassword && data.newPassword.trim() !== '') {
-    // Check minimum length
-    if (data.newPassword.length < 6) {
+  const hasCurrentPassword = data.currentPassword && data.currentPassword.trim() !== '';
+  const hasNewPassword = data.newPassword && data.newPassword.trim() !== '';
+  const hasConfirmPassword = data.confirmPassword && data.confirmPassword.trim() !== '';
+  
+  // If any password field is filled, all must be filled
+  if (hasCurrentPassword || hasNewPassword || hasConfirmPassword) {
+    if (!hasCurrentPassword) {
+      return false;
+    }
+    if (!hasNewPassword) {
+      return false;
+    }
+    if (!hasConfirmPassword) {
+      return false;
+    }
+    // Validate new password length
+    if (data.newPassword!.length < 6) {
       return false;
     }
     // Confirm password must match
     if (data.newPassword !== data.confirmPassword) {
       return false;
     }
-    // Current password is required
-    if (!data.currentPassword || data.currentPassword.trim() === '') {
-      return false;
-    }
   }
   
   return true;
 }, {
-  message: "Please check password requirements",
-  path: ['confirmPassword'],
+  message: "All password fields are required to change password",
+  path: ['newPassword'],
 });

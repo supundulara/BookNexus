@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Toaster } from 'react-hot-toast';
 import LoginForm from '../components/auth/LoginForm';
 import { useAuth } from '../contexts/AuthContext';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
@@ -18,6 +19,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ">
+      <Toaster position="top-right" />
       {/* Decorative elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-900/20 rounded-full -mr-48 -mt-48"></div>
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-800/10 rounded-full -ml-32 -mb-32"></div>

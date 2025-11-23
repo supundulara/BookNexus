@@ -75,7 +75,10 @@ const ProfilePage: React.FC = () => {
     };
 
     // Only include password fields if user is trying to change password
-    if (data.newPassword && data.newPassword.trim() !== '') {
+    // All three fields must be provided (validated by schema)
+    if (data.newPassword && data.newPassword.trim() !== '' &&
+        data.currentPassword && data.currentPassword.trim() !== '' &&
+        data.confirmPassword && data.confirmPassword.trim() !== '') {
       submitData.currentPassword = data.currentPassword;
       submitData.newPassword = data.newPassword;
     }

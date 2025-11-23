@@ -139,7 +139,7 @@ const StudentRegisterForm: React.FC<StudentRegisterFormProps> = ({ onSuccess }) 
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
                      focus:ring-2 focus:ring-emerald-500 focus:border-transparent
                      dark:bg-gray-700 dark:text-white"
-            placeholder="e.g., EU/IS/2021/PHY/111"
+            placeholder="e.g., EU/IS/2021/PHY/000"
           />
         </div>
 
@@ -157,7 +157,7 @@ const StudentRegisterForm: React.FC<StudentRegisterFormProps> = ({ onSuccess }) 
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
                      focus:ring-2 focus:ring-emerald-500 focus:border-transparent
                      dark:bg-gray-700 dark:text-white"
-            placeholder="e.g., PS3220"
+            placeholder="e.g., PS0000"
           />
         </div>
 
@@ -196,7 +196,7 @@ const StudentRegisterForm: React.FC<StudentRegisterFormProps> = ({ onSuccess }) 
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
                      focus:ring-2 focus:ring-emerald-500 focus:border-transparent
                      dark:bg-gray-700 dark:text-white"
-            placeholder="e.g., Sarath Dissanayakage Manusha Kavishan"
+         
           />
         </div>
 
@@ -214,7 +214,7 @@ const StudentRegisterForm: React.FC<StudentRegisterFormProps> = ({ onSuccess }) 
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
                      focus:ring-2 focus:ring-emerald-500 focus:border-transparent
                      dark:bg-gray-700 dark:text-white"
-            placeholder="e.g., Dissanayaka"
+           
           />
         </div>
 
@@ -232,7 +232,7 @@ const StudentRegisterForm: React.FC<StudentRegisterFormProps> = ({ onSuccess }) 
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
                      focus:ring-2 focus:ring-emerald-500 focus:border-transparent
                      dark:bg-gray-700 dark:text-white"
-            placeholder="e.g., DISSANAYAKA S.D.M.K."
+       
           />
         </div>
 
