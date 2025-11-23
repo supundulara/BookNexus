@@ -8,9 +8,20 @@ interface CheckoutModalProps {
   onClose: () => void;
   onCheckout: (registrationNumber: string) => Promise<void>;
   bookTitle: string;
+  modalTitle?: string;
+  actionText?: string;
+  isReturn?: boolean;
 }
 
-const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, onCheckout, bookTitle }) => {
+const CheckoutModal: React.FC<CheckoutModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  onCheckout, 
+  bookTitle,
+  modalTitle,
+  actionText,
+  isReturn = false
+}) => {
   const [registrationNumber, setRegistrationNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -57,7 +68,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, onChecko
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Checkout Book
+                  {modalTitle || (isReturn ? 'Return Book' : 'Checkout Book')}
                 </h3>
                 <button
                   onClick={onClose}
@@ -68,7 +79,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, onChecko
               </div>
 
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Enter the student's registration number to checkout "{bookTitle}"
+                Enter the student's registration number to {isReturn ? 'return' : 'checkout'} "{bookTitle}"
               </p>
 
               <form onSubmit={handleSubmit}>
@@ -108,7 +119,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, onChecko
                     className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 
                              text-white rounded-lg disabled:opacity-50"
                   >
-                    {isLoading ? 'Processing...' : 'Checkout'}
+                    {isLoading ? 'Processing...' : (actionText || (isReturn ? 'Return' : 'Checkout'))}
                   </button>
                 </div>
               </form>

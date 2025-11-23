@@ -337,7 +337,8 @@ const BookDetailPage: React.FC = () => {
         isOpen={showReturnModal}
         onClose={() => setShowReturnModal(false)}
         onCheckout={handleReturn}
-        bookTitle={`Return: ${book.title}`}
+        bookTitle={book.title}
+        isReturn={true}
       />
 
       {/* Delete Confirmation Modal */}
