@@ -81,7 +81,7 @@ const MyBooksPage: React.FC = () => {
               {checkout.Book?.imageUrl && (
                 <div className="h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
                   <img
-                    src={`${(import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '')}${checkout.Book.imageUrl}`}
+                    src={`${(import.meta.env.VITE_API_URL || '').replace('/api', '')}${checkout.Book.imageUrl}`}
                     alt={checkout.Book.title}
                     className="w-full h-full object-cover"
                   />

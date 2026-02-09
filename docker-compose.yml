@@ -2,18 +2,32 @@ version: "3.8"
 
 services:
   backend:
-    build: .
+    build:
+      context: ./backend
     container_name: booknexus-backend
     ports:
       - "5000:5000"
     env_file:
-      - .env
+      - ./backend/.env
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - booknexus-network
     command: sh -c "npm run seed && node --loader ts-node/esm src/seeders/bookSeeder.ts && npm start"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:5000/api
+    container_name: booknexus-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - booknexus-network
 
   postgres:
     image: postgres:15
