@@ -4,9 +4,10 @@ metadata:
   name: frontend
   namespace: booknexus
 spec:
+  type: ClusterIP  # Change from NodePort  
   selector:
     app: frontend
   ports:
-    - port: 80
+    - name: http
+      port: 80
       targetPort: 80
-  type: NodePort
