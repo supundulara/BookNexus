@@ -6,10 +6,15 @@ import User from '../models/User.js';
 // Load environment variables
 dotenv.config();
 
-// Get database connection
-const sequelize = new Sequelize(process.env.DATABASE_URL || '', {
+// Use individual env vars instead of DATABASE_URL
+const sequelize = new Sequelize({
   dialect: 'postgres',
-  logging: false
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432'),
+  database: process.env.DB_NAME || 'booknexus_db',
+  username: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
+  logging: false,
 });
 
 // Sample users to seed
