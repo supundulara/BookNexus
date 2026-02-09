@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backend-seed
+  namespace: booknexus
+spec:
+  template:
+    spec:
+      containers:
+        - name: seeder
+          image: booknexus-backend:latest
+          imagePullPolicy: Never
+          command: 
+            - sh
+            - -c
+            - |
+              npm run seed
+              node --loader ts-node/esm src/seeders/bookSeeder.ts
+          envFrom:
+            - configMapRef:
+                name: backend-config  # same config as deployment
+      restartPolicy: Never
+  backoffLimit: 3
