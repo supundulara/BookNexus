@@ -32,3 +32,23 @@ spec:
           envFrom:
             - configMapRef:
                 name: backend-config
+
+          # Liveness Probe
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 60 #Wait before the first check
+            periodSeconds: 10 # check every 10 sec
+            timeoutSeconds: 5
+            failureThreshold: 3 #fail 3 times-> then restart
+
+          #Readiness probe
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 3
