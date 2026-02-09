@@ -8,6 +8,7 @@ import bookRoutes from './routes/bookRoutes.js';
 import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
 import path from 'path';
 import fs from 'fs';
+import healthRoutes from './routes/healthRoutes.js';
 
 // Process error handling
 process.on('uncaughtException', (error) => {
@@ -63,6 +64,8 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')
 app.use(express.static(path.join(process.cwd(), 'public')));
 
 // Routes
+app.use(healthRoutes);     
+app.use("/ready", healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 
@@ -76,9 +79,10 @@ app.use(notFound);
 app.use(errorHandler);
 
 // Start server
-const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+const PORT = parseInt(process.env.PORT || '5000', 10);
+const server = app.listen(PORT, "0.0.0.0", () => {  // ✅ Add "0.0.0.0" here
+  console.log(`Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
+  console.log(`Listening on 0.0.0.0:${PORT}`);  // ✅ Add this line to confirm
 });
 
 // Graceful shutdown
