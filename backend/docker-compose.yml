@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  backend:
+    build: .
+    container_name: booknexus-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - booknexus-network
+    command: sh -c "npm run seed && node --loader ts-node/esm src/seeders/bookSeeder.ts && npm start"
+
+  postgres:
+    image: postgres:15
+    container_name: booknexus_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: booknexus_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - booknexus-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  booknexus-network:
+    driver: bridge

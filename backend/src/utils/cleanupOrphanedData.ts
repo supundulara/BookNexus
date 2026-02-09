@@ -8,6 +8,21 @@ export const cleanupOrphanedCheckouts = async (): Promise<void> => {
   try {
     console.log('Checking for orphaned checkout records...');
 
+    // Check if Checkouts table exists first
+    const [tables] = await sequelize.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_name = 'Checkouts'
+      );
+    `);
+
+    const tableExists = (tables as any)[0].exists;
+
+    if (!tableExists) {
+      console.log('✓ Checkouts table does not exist yet - skipping cleanup');
+      return;
+    }
+
     // Delete checkouts with non-existent users
     const [deletedByUser] = await sequelize.query(`
       DELETE FROM "Checkouts" 
